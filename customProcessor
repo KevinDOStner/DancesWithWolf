@@ -1,0 +1,16 @@
+import openpyxl
+from org.python.core.util.FileUtil import wrap
+from org.apache.nifi.processors.script import ExecuteScript
+
+flowFile = session.get()
+xlsx = openpyxl.load_workbook(flowFile, data_only=True)
+sheet = xlsx.get_sheet_by_name("Wages") 
+max_row=sheet.max_row
+max_column=sheet.max_column
+for i in range(1,max_row+1):    
+  for j in range(1,max_column+1):    
+    cell_obj=sheet.cell(row=i,column=j)
+    session.write(cell_obj.value,end='|') 
+    session.write(flowFile, '\r')
+    
+session.transfer(flowFile, ExecuteScript.REL_SUCCESS)
